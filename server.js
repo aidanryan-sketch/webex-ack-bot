@@ -24,7 +24,7 @@ function buildAlertCard(alertId, text, isEscalated = false) {
   return {
     contentType: "application/vnd.microsoft.card.adaptive",
     content: {
-      \$schema: "http://adaptivecards.io/schemas/adaptive-card.json",
+      $schema: "http://adaptivecards.io/schemas/adaptive-card.json",
       type: "AdaptiveCard",
       version: "1.3",
       body: [
