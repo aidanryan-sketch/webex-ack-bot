@@ -10,7 +10,7 @@ const app = express();
 app.use(express.json());
 
 const activeAlerts = new Map();
-const ESCALATION_TIMEOUT_MS = 30000; // 30 seconds for quick testing
+const ESCALATION_TIMEOUT_MS = 30000;
 
 function buildAlertCard(alertId, text, isEscalated = false) {
   const headerText = isEscalated 
@@ -24,7 +24,7 @@ function buildAlertCard(alertId, text, isEscalated = false) {
   return {
     contentType: "application/vnd.microsoft.card.adaptive",
     content: {
-      $schema: "http://adaptivecards.io/schemas/adaptive-card.json",
+      "\$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
       type: "AdaptiveCard",
       version: "1.3",
       body: [
@@ -59,13 +59,12 @@ async function triggerEscalation(alertId) {
   console.log(`\n⏰ [TIMEOUT] Alert ${alertId} was not acknowledged by Person B. Escalating to Person C...`);
 
   try {
-    // 1. Update Person B's card to show timeout
     await webex.messages.update(alertData.messageId, {
       toPersonEmail: process.env.PERSON_B_EMAIL,
       attachments: [{
         contentType: "application/vnd.microsoft.card.adaptive",
         content: {
-          $schema: "http://adaptivecards.io/schemas/adaptive-card.json",
+          "\$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
           type: "AdaptiveCard",
           version: "1.3",
           body: [
@@ -86,7 +85,6 @@ async function triggerEscalation(alertId) {
       }]
     });
 
-    // 2. Send card to Person C
     const escalatedMsg = await webex.messages.create({
       toPersonEmail: process.env.PERSON_C_EMAIL,
       markdown: `🚨 **ESCALATED ALERT**: ${alertData.text}`,
@@ -95,7 +93,6 @@ async function triggerEscalation(alertId) {
 
     console.log(`[ESCALATED SENT] Delivered to Person C (${process.env.PERSON_C_EMAIL})`);
 
-    // 3. Notify Person A
     if (process.env.PERSON_A_EMAIL) {
       await webex.messages.create({
         toPersonEmail: process.env.PERSON_A_EMAIL,
@@ -109,7 +106,6 @@ async function triggerEscalation(alertId) {
   }
 }
 
-// Endpoint to trigger test alert
 app.get('/send-alert', async (req, res) => {
   const alertId = `ALERT_${Date.now()}`;
   const text = "Bed 4: Immediate clinical review required.";
@@ -139,7 +135,6 @@ app.get('/send-alert', async (req, res) => {
   }
 });
 
-// Webhook endpoint to catch button clicks
 app.post('/webhook', async (req, res) => {
   res.status(200).send('OK');
 
@@ -168,7 +163,7 @@ app.post('/webhook', async (req, res) => {
           attachments: [{
             contentType: "application/vnd.microsoft.card.adaptive",
             content: {
-              \$schema: "http://adaptivecards.io/schemas/adaptive-card.json",
+              "\$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
               type: "AdaptiveCard",
               version: "1.3",
               body: [
